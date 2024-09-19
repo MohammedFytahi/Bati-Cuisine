@@ -3,6 +3,7 @@ package com.bati_cuisin.model;
 public abstract class Composant {
     protected String nom;
     protected double tauxTVA;
+    protected  Project project;
 
     public Composant(String nom, double tauxTVA) {
         this.nom = nom;
@@ -25,4 +26,14 @@ public abstract class Composant {
     public void setTauxTVA(double tauxTVA) {
         this.tauxTVA = tauxTVA;
     }
+
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
+    }
+
+
 }

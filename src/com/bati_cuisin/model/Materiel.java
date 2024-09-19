@@ -6,6 +6,7 @@
         private double coutTransport;
         private double coefficientQualite;
 
+
         public Materiel(String nom, double tauxTVA, double coutUnitaire, double quantite, double coutTransport, double coefficientQualite) {
             super(nom, tauxTVA);
             this.coutUnitaire = coutUnitaire;
@@ -46,5 +47,6 @@
         public void setCoefficientQualite(double coefficientQualite) {
             this.coefficientQualite = coefficientQualite;
         }
+
     }
 

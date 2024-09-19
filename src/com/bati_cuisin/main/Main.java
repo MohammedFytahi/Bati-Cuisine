@@ -4,7 +4,9 @@ import com.bati_cuisin.model.Client;
 import com.bati_cuisin.model.Materiel;
 import com.bati_cuisin.model.MainOeuvre;
 import com.bati_cuisin.model.Project;
+import com.bati_cuisin.repository.MainOeuvreRepository;
 import com.bati_cuisin.service.ClientService;
+import com.bati_cuisin.service.MainOeuvreService;
 import com.bati_cuisin.service.MaterielService;
 import com.bati_cuisin.service.ProjectService;
 import com.bati_cuisin.repository.ClientRepository;
@@ -26,10 +28,12 @@ public class Main {
         ProjectRepository projectRepository = new ProjectRepository();
         ClientRepository clientRepository = new ClientRepository();
         MaterielRepository materielRepository = new MaterielRepository();
+        MainOeuvreRepository mainOeuvreRepository = new MainOeuvreRepository();
 
         ProjectService projectService = new ProjectService(projectRepository);
         ClientService clientService = new ClientService(clientRepository);
         MaterielService materielService = new MaterielService(materielRepository);
+        MainOeuvreService mainOeuvreService = new MainOeuvreService(mainOeuvreRepository);
 
         while (true) {
             afficherMenuPrincipal();
@@ -38,7 +42,7 @@ public class Main {
 
             switch (choix) {
                 case 1:
-                    creerNouveauProjet(projectService, clientService, materielService);
+                    creerNouveauProjet(projectService, clientService, materielService, mainOeuvreService);
                     break;
                 case 2:
                     // Afficher les projets existants (méthode à implémenter)
@@ -66,7 +70,7 @@ public class Main {
         System.out.print("Choisissez une option : ");
     }
 
-    private static void creerNouveauProjet(ProjectService projectService, ClientService clientService, MaterielService materielService) {
+    private static void creerNouveauProjet(ProjectService projectService, ClientService clientService, MaterielService materielService, MainOeuvreService mainOeuvreService) {
         System.out.println("--- Recherche de client ---");
         System.out.println("Souhaitez-vous chercher un client existant ou en ajouter un nouveau ?");
         System.out.println("1. Chercher un client existant");
@@ -116,24 +120,11 @@ public class Main {
         }
 
         if (client != null) {
-            // Création du projet
-//            System.out.println("--- Création d'un Nouveau Projet ---");
-//            System.out.print("Entrez le nom du projet : ");
-//            String nomProjet = scanner.nextLine();
-//            System.out.print("Entrez la surface de la cuisine (en m²) : ");
-//            double surface = scanner.nextDouble();
-//            scanner.nextLine();  // Consommer le retour à la ligne
-//
-//            // Ajout du projet
-//            Project project = new Project(nomProjet, client.getId(), 0.0, "En cours");
-//            projectService.creerNouveauProjet(project);
-
-            // Ajout des matériaux
             System.out.println("Souhaitez-vous ajouter des matériaux pour ce projet ?");
             System.out.println("1. Oui");
             System.out.println("2. Non");
             int choixMateriel = scanner.nextInt();
-            scanner.nextLine();  // Consommer le retour à la ligne
+            scanner.nextLine();
 
             if (choixMateriel == 1) {
                 boolean continuerAjout = true;
@@ -162,7 +153,7 @@ public class Main {
                     System.out.println("1. Oui");
                     System.out.println("2. Non");
                     int choixContinuer = scanner.nextInt();
-                    scanner.nextLine();  // Consommer le retour à la ligne
+                    scanner.nextLine();
 
                     if (choixContinuer != 1) {
                         continuerAjout = false;
@@ -170,11 +161,53 @@ public class Main {
                 }
             }
 
-            System.out.println("Projet créé avec succès avec les matériels ajoutés.");
+            // Ajout de la main-d'œuvre après les matériaux
+            System.out.println("Souhaitez-vous ajouter de la main d'œuvre pour ce projet ?");
+            System.out.println("1. Oui");
+            System.out.println("2. Non");
+            int choixMainOeuvre = scanner.nextInt();
+            scanner.nextLine();
+
+            if (choixMainOeuvre == 1) {
+                boolean continuerAjoutMainOeuvre = true;
+                while (continuerAjoutMainOeuvre) {
+                    System.out.println("--- Ajout de Main d'Œuvre ---");
+                    System.out.print("Entrez le nom de la tâche : ");
+                    String nomTache = scanner.nextLine();
+                    System.out.print("Entrez le taux horaire : ");
+                    double tauxHoraire = scanner.nextDouble();
+                    System.out.print("Entrez le nombre d'heures de travail : ");
+                    double heuresTravail = scanner.nextDouble();
+                    System.out.print("Entrez le coût de déplacement : ");
+                    double coutDeplacement = scanner.nextDouble();
+                    System.out.print("Entrez le coefficient de qualité : ");
+                    double coefficientQualite = scanner.nextDouble();
+                    scanner.nextLine();  // Consommer le retour à la ligne
+
+                    // Création et ajout de la main-d'œuvre
+                    MainOeuvre mainOeuvre = new MainOeuvre(nomTache, tauxHoraire, heuresTravail, coutDeplacement, coefficientQualite);
+                    mainOeuvreService.ajouterMainOeuvre(mainOeuvre);
+                    System.out.println("Main d'œuvre ajoutée avec succès.");
+
+                    // Demander à l'utilisateur s'il souhaite ajouter une autre tâche
+                    System.out.println("Souhaitez-vous ajouter une autre tâche de main d'œuvre ?");
+                    System.out.println("1. Oui");
+                    System.out.println("2. Non");
+                    int choixContinuer = scanner.nextInt();
+                    scanner.nextLine();
+
+                    if (choixContinuer != 1) {
+                        continuerAjoutMainOeuvre = false;
+                    }
+                }
+            }
+
+            System.out.println("Projet créé avec succès avec les matériaux et la main d'œuvre ajoutés.");
         } else {
             System.out.println("La création du projet a échoué. Aucun client sélectionné.");
         }
     }
+
 
 
 }
