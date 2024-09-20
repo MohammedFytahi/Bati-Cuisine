@@ -7,8 +7,9 @@
         private double coefficientQualite;
 
 
-        public Materiel(String nom, double tauxTVA, double coutUnitaire, double quantite, double coutTransport, double coefficientQualite) {
-            super(nom, tauxTVA);
+        public Materiel(String nom, double tauxTVA, double coutUnitaire, double quantite, double coutTransport, double coefficientQualite, int id_projet) {
+            super(nom, tauxTVA, id_projet);
+
             this.coutUnitaire = coutUnitaire;
             this.quantite = quantite;
             this.coutTransport = coutTransport;

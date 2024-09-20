@@ -10,8 +10,8 @@ public class MaterielService {
         this.materielRepository = materielRepository;
     }
 
-    public void ajouterMateriel(String nom, double tauxTVA, double coutUnitaire, double quantite, double coutTransport, double coefficientQualite) {
-        Materiel materiel = new Materiel(nom, tauxTVA, coutUnitaire, quantite, coutTransport, coefficientQualite);
+    public void ajouterMateriel(String nom, double tauxTVA, double coutUnitaire, double quantite, double coutTransport, double coefficientQualite, int id_projet) {
+        Materiel materiel = new Materiel(nom, tauxTVA, coutUnitaire, quantite, coutTransport, coefficientQualite,id_projet);
         materielRepository.ajouterMateriel(materiel);
     }
 

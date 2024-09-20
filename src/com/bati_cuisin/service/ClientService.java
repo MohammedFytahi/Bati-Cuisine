@@ -9,12 +9,11 @@ public class ClientService {
 
     private final ClientRepository clientRepository;
 
-    public ClientService(ClientRepository clientRepository){
-
+    public ClientService(ClientRepository clientRepository) {
         this.clientRepository = clientRepository;
     }
 
-    public void addClient(Client client) throws SQLException {
-        clientRepository.createClient(client);
+    public int addClient(Client client) throws SQLException {
+        return clientRepository.createClient(client);
     }
 }

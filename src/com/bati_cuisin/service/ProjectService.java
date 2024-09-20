@@ -14,13 +14,18 @@ public class ProjectService {
 
     public void creerNouveauProjet(Project project) {
         projectRepository.ajouterProjet(project);
-        System.out.println("Projet ajouté avec succès : " + project.getNomProjet());
+        if (project.getIdProjet() > 0) {
+            System.out.println("Projet ajouté avec succès : " + project.getNomProjet() + " avec ID : " + project.getIdProjet());
+        } else {
+            System.out.println("Erreur lors de l'ajout du projet.");
+        }
     }
+
 
     public Project consulterProjet(int idProjet) {
         return projectRepository.trouverProjetParId(idProjet);
     }
 
-    // Méthodes supplémentaires pour gérer les projets peuvent être ajoutées ici
+
 }
 

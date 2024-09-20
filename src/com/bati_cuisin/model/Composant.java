@@ -3,11 +3,12 @@ package com.bati_cuisin.model;
 public abstract class Composant {
     protected String nom;
     protected double tauxTVA;
-    protected  Project project;
+ protected  int id_projet;
 
-    public Composant(String nom, double tauxTVA) {
+    public Composant(String nom, double tauxTVA, int id_projet) {
         this.nom = nom;
         this.tauxTVA = tauxTVA;
+        this.id_projet = id_projet;
     }
 
     // Getters et setters pour les attributs communs
@@ -27,13 +28,8 @@ public abstract class Composant {
         this.tauxTVA = tauxTVA;
     }
 
-    public Project getProject() {
-        return project;
+
+    public int getId_projet() {
+        return id_projet;
     }
-
-    public void setProject(Project project) {
-        this.project = project;
-    }
-
-
 }

@@ -105,8 +105,13 @@ public class Main {
 
                 // Création et ajout du client
                 client = new Client(nom, adresse, telephone, estProfessionnel);
+                scanner.nextLine(); // Consommer le retour à la ligne
+
+                // Création et ajout du client
+                client = new Client(nom, adresse, telephone, estProfessionnel);
                 try {
-                    clientService.addClient(client);
+                    int clientId = clientService.addClient(client); // Récupérer l'ID du client ajouté
+                    client.setId(clientId); // Assigner l'ID au client
                     System.out.println("Client ajouté avec succès.");
                 } catch (SQLException e) {
                     e.printStackTrace();
@@ -120,6 +125,25 @@ public class Main {
         }
 
         if (client != null) {
+
+            // Création du projet
+            System.out.print("Entrez le nom du projet : ");
+            String nomProjet = scanner.nextLine();
+
+// Demander la marge bénéficiaire
+            System.out.print("Entrez la marge bénéficiaire : ");
+            double margeBeneficiaire = scanner.nextDouble();
+            scanner.nextLine();
+
+
+
+
+            Project projet = new Project(nomProjet, client.getId(), margeBeneficiaire, Project.EtatProjet.EN_COURS);
+
+            projectService.creerNouveauProjet(projet); // Implémentez cette méthode dans le service projet
+            int idProjet = projet.getIdProjet();
+            System.out.println("Projet créé avec succès.");
+
             System.out.println("Souhaitez-vous ajouter des matériaux pour ce projet ?");
             System.out.println("1. Oui");
             System.out.println("2. Non");
@@ -142,10 +166,10 @@ public class Main {
                     double coutTransport = scanner.nextDouble();
                     System.out.print("Entrez le coefficient de qualité : ");
                     double coefficientQualite = scanner.nextDouble();
-                    scanner.nextLine();  // Consommer le retour à la ligne
+                    scanner.nextLine();
 
                     // Création et ajout du matériel
-                    materielService.ajouterMateriel(nomMateriel, tauxTVA, coutUnitaire, quantite, coutTransport, coefficientQualite);
+                    materielService.ajouterMateriel(nomMateriel, tauxTVA, coutUnitaire, quantite, coutTransport, coefficientQualite,idProjet);
                     System.out.println("Matériel ajouté avec succès.");
 
                     // Demander à l'utilisateur s'il souhaite ajouter un autre matériel
@@ -161,7 +185,7 @@ public class Main {
                 }
             }
 
-            // Ajout de la main-d'œuvre après les matériaux
+
             System.out.println("Souhaitez-vous ajouter de la main d'œuvre pour ce projet ?");
             System.out.println("1. Oui");
             System.out.println("2. Non");
@@ -182,14 +206,14 @@ public class Main {
                     double coutDeplacement = scanner.nextDouble();
                     System.out.print("Entrez le coefficient de qualité : ");
                     double coefficientQualite = scanner.nextDouble();
-                    scanner.nextLine();  // Consommer le retour à la ligne
+                    scanner.nextLine();
 
-                    // Création et ajout de la main-d'œuvre
-                    MainOeuvre mainOeuvre = new MainOeuvre(nomTache, tauxHoraire, heuresTravail, coutDeplacement, coefficientQualite);
+
+                    MainOeuvre mainOeuvre = new MainOeuvre(nomTache, tauxHoraire, heuresTravail, coutDeplacement, coefficientQualite,idProjet);
                     mainOeuvreService.ajouterMainOeuvre(mainOeuvre);
                     System.out.println("Main d'œuvre ajoutée avec succès.");
 
-                    // Demander à l'utilisateur s'il souhaite ajouter une autre tâche
+
                     System.out.println("Souhaitez-vous ajouter une autre tâche de main d'œuvre ?");
                     System.out.println("1. Oui");
                     System.out.println("2. Non");
