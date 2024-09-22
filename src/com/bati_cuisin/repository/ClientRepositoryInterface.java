@@ -6,4 +6,5 @@ import java.sql.SQLException;
 
 public interface ClientRepositoryInterface {
     int createClient(Client client) throws SQLException;
+    Client trouverParNom(String nom) throws SQLException;
 }

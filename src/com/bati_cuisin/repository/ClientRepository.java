@@ -47,5 +47,25 @@ public class ClientRepository implements ClientRepositoryInterface{
     }
 
 
+    @Override
+    public Client trouverParNom(String nom) throws SQLException {
+        String query = "SELECT * FROM client WHERE nom = ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, nom);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    int id = resultSet.getInt("id_client");
+                    String adresse = resultSet.getString("adresse");
+                    String telephone = resultSet.getString("telephone");
+                    boolean estProfessionnel = resultSet.getBoolean("est_professionnel");
+
+                    return new Client(id, nom, adresse, telephone, estProfessionnel);
+                }
+            }
+        }
+        return null; // Si aucun client n'est trouvé
+    }
+
+
 
 }

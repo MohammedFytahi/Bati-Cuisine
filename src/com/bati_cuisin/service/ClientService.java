@@ -16,4 +16,7 @@ public class ClientService {
     public int addClient(Client client) throws SQLException {
         return clientRepository.createClient(client);
     }
+    public Client trouverClientParNom(String nom) throws SQLException {
+        return clientRepository.trouverParNom(nom);
+    }
 }

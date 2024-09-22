@@ -33,17 +33,17 @@ public class Main {
         while (true) {
             afficherMenuPrincipal();
             int choix = scanner.nextInt();
-            scanner.nextLine();  // Consommer le retour à la ligne
+            scanner.nextLine();
 
             switch (choix) {
                 case 1:
                     creerNouveauProjet(projectService, clientService, materielService, mainOeuvreService,devisService);
                     break;
                 case 2:
-                    // Afficher les projets existants (méthode à implémenter)
+
                     break;
                 case 3:
-                    // Calculer le coût d'un projet (méthode à implémenter)
+
                     break;
                 case 4:
                     System.out.println("Merci d'utiliser notre application. À bientôt !");
@@ -72,7 +72,7 @@ public class Main {
         System.out.println("2. Ajouter un nouveau client");
         System.out.print("Choisissez une option : ");
         int choixClient = scanner.nextInt();
-        scanner.nextLine();  // Consommer le retour à la ligne
+        scanner.nextLine();
 
         Client client = null;
 
@@ -80,9 +80,20 @@ public class Main {
             case 1:
                 System.out.print("Entrez le nom du client : ");
                 String nomClientExistant = scanner.nextLine();
-                // Fonctionnalité de recherche non encore implémentée
-                System.out.println("Fonctionnalité non encore implémentée.");
+
+                try {
+                    client = clientService.trouverClientParNom(nomClientExistant);
+                    if (client != null) {
+                        System.out.println("Client trouvé : " + client.getNom() + ", " + client.getAdresse());
+                    } else {
+                        System.out.println("Aucun client trouvé avec ce nom.");
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    System.out.println("Erreur lors de la recherche du client.");
+                }
                 break;
+
 
             case 2:
                 System.out.print("Entrez le nom du client : ");
@@ -126,7 +137,7 @@ public class Main {
 
             double totalCost = 0.0;
 
-            // Ajout de matériel
+
             System.out.println("Souhaitez-vous ajouter des matériaux pour ce projet ?");
             System.out.println("1. Oui");
             System.out.println("2. Non");
@@ -156,6 +167,7 @@ public class Main {
 
                     materielService.ajouterMateriel(nomMateriel, tauxTVA, coutUnitaire, quantite, coutTransport, coefficientQualite, idProjet);
                     System.out.println("Matériel ajouté avec succès.");
+                    System.out.println("le cout du materiel: "+ coutMateriel);
 
                     System.out.println("Souhaitez-vous ajouter un autre matériel ?");
                     System.out.println("1. Oui");
@@ -169,7 +181,7 @@ public class Main {
                 }
             }
 
-            // Ajout de main d'œuvre
+
             System.out.println("Souhaitez-vous ajouter de la main d'œuvre pour ce projet ?");
             System.out.println("1. Oui");
             System.out.println("2. Non");
@@ -198,6 +210,7 @@ public class Main {
                     MainOeuvre mainOeuvre = new MainOeuvre(nomTache, tauxHoraire, heuresTravail, coutDeplacement, coefficientQualite, idProjet);
                     mainOeuvreService.ajouterMainOeuvre(mainOeuvre);
                     System.out.println("Main d'œuvre ajoutée avec succès.");
+                    System.out.println("le cout de main d'oeuvre: "+ coutMainOeuvre);
 
                     System.out.println("Souhaitez-vous ajouter une autre tâche de main d'œuvre ?");
                     System.out.println("1. Oui");
@@ -236,7 +249,7 @@ public class Main {
             System.out.print("Souhaitez-vous enregistrer le devis ? (y/n) : ");
             String confirmation = scanner.nextLine();
 
-            boolean accepte = false;  // Initialiser la variable accepte
+            boolean accepte = false;
             if (confirmation.equalsIgnoreCase("y")) {
                 accepte = true;
                 Devis devis = new Devis(dateEmission, dateValidite, projet.getIdProjet(), totalCost, accepte);
