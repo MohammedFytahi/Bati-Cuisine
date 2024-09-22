@@ -5,6 +5,8 @@ package com.bati_cuisin.service;
 import com.bati_cuisin.model.Project;
 import com.bati_cuisin.repository.ProjectRepositoryInterface;
 
+import java.sql.SQLException;
+
 public class ProjectService {
     private ProjectRepositoryInterface projectRepository;
 
@@ -26,6 +28,8 @@ public class ProjectService {
         return projectRepository.trouverProjetParId(idProjet);
     }
 
+    public void mettreAJourCoutTotalProjet(int idProjet, double coutTotal) throws SQLException {
+        projectRepository.updateCoutTotal(idProjet, coutTotal);
+    }
 
 }
-

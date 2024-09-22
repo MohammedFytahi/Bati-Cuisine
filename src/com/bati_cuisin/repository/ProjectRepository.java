@@ -73,4 +73,19 @@ public class ProjectRepository implements ProjectRepositoryInterface {
         }
         return null;
     }
+
+
+    @Override
+    public void updateCoutTotal(int idProjet, double coutTotal) throws SQLException {
+        String sql = "UPDATE projet SET cout_total = ? WHERE id_projet = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setDouble(1, coutTotal);
+            pstmt.setInt(2, idProjet);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
 }

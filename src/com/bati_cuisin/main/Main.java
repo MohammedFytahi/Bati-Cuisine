@@ -1,21 +1,14 @@
 package com.bati_cuisin.main;
 
-import com.bati_cuisin.model.Client;
-import com.bati_cuisin.model.Materiel;
-import com.bati_cuisin.model.MainOeuvre;
-import com.bati_cuisin.model.Project;
-import com.bati_cuisin.repository.MainOeuvreRepository;
-import com.bati_cuisin.service.ClientService;
-import com.bati_cuisin.service.MainOeuvreService;
-import com.bati_cuisin.service.MaterielService;
-import com.bati_cuisin.service.ProjectService;
-import com.bati_cuisin.repository.ClientRepository;
-import com.bati_cuisin.repository.MaterielRepository;
-import com.bati_cuisin.repository.ProjectRepository;
+import com.bati_cuisin.model.*;
+import com.bati_cuisin.repository.*;
+import com.bati_cuisin.service.*;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 public class Main {
@@ -29,11 +22,13 @@ public class Main {
         ClientRepository clientRepository = new ClientRepository();
         MaterielRepository materielRepository = new MaterielRepository();
         MainOeuvreRepository mainOeuvreRepository = new MainOeuvreRepository();
+        DevisRepository devisRepository = new DevisRepository();
 
         ProjectService projectService = new ProjectService(projectRepository);
         ClientService clientService = new ClientService(clientRepository);
         MaterielService materielService = new MaterielService(materielRepository);
         MainOeuvreService mainOeuvreService = new MainOeuvreService(mainOeuvreRepository);
+        DevisService devisService = new DevisService(devisRepository);
 
         while (true) {
             afficherMenuPrincipal();
@@ -42,7 +37,7 @@ public class Main {
 
             switch (choix) {
                 case 1:
-                    creerNouveauProjet(projectService, clientService, materielService, mainOeuvreService);
+                    creerNouveauProjet(projectService, clientService, materielService, mainOeuvreService,devisService);
                     break;
                 case 2:
                     // Afficher les projets existants (méthode à implémenter)
@@ -70,7 +65,7 @@ public class Main {
         System.out.print("Choisissez une option : ");
     }
 
-    private static void creerNouveauProjet(ProjectService projectService, ClientService clientService, MaterielService materielService, MainOeuvreService mainOeuvreService) {
+    private static void creerNouveauProjet(ProjectService projectService, ClientService clientService, MaterielService materielService, MainOeuvreService mainOeuvreService, DevisService devisService) {
         System.out.println("--- Recherche de client ---");
         System.out.println("Souhaitez-vous chercher un client existant ou en ajouter un nouveau ?");
         System.out.println("1. Chercher un client existant");
@@ -83,16 +78,13 @@ public class Main {
 
         switch (choixClient) {
             case 1:
-                // Code pour chercher un client existant
                 System.out.print("Entrez le nom du client : ");
                 String nomClientExistant = scanner.nextLine();
-                // Appel à la méthode pour récupérer le client (méthode à implémenter dans le service client)
-                // client = clientService.getClientByName(nomClientExistant);
+                // Fonctionnalité de recherche non encore implémentée
                 System.out.println("Fonctionnalité non encore implémentée.");
                 break;
 
             case 2:
-                // Ajout d'un nouveau client
                 System.out.print("Entrez le nom du client : ");
                 String nom = scanner.nextLine();
                 System.out.print("Entrez l'adresse du client : ");
@@ -101,17 +93,12 @@ public class Main {
                 String telephone = scanner.nextLine();
                 System.out.print("Est-ce un professionnel ? (true/false) : ");
                 boolean estProfessionnel = scanner.nextBoolean();
-                scanner.nextLine(); // Consommer le retour à la ligne
+                scanner.nextLine();
 
-                // Création et ajout du client
-                client = new Client(nom, adresse, telephone, estProfessionnel);
-                scanner.nextLine(); // Consommer le retour à la ligne
-
-                // Création et ajout du client
                 client = new Client(nom, adresse, telephone, estProfessionnel);
                 try {
-                    int clientId = clientService.addClient(client); // Récupérer l'ID du client ajouté
-                    client.setId(clientId); // Assigner l'ID au client
+                    int clientId = clientService.addClient(client);
+                    client.setId(clientId);
                     System.out.println("Client ajouté avec succès.");
                 } catch (SQLException e) {
                     e.printStackTrace();
@@ -125,25 +112,21 @@ public class Main {
         }
 
         if (client != null) {
-
-            // Création du projet
             System.out.print("Entrez le nom du projet : ");
             String nomProjet = scanner.nextLine();
 
-// Demander la marge bénéficiaire
             System.out.print("Entrez la marge bénéficiaire : ");
             double margeBeneficiaire = scanner.nextDouble();
             scanner.nextLine();
 
-
-
-
             Project projet = new Project(nomProjet, client.getId(), margeBeneficiaire, Project.EtatProjet.EN_COURS);
-
-            projectService.creerNouveauProjet(projet); // Implémentez cette méthode dans le service projet
+            projectService.creerNouveauProjet(projet);
             int idProjet = projet.getIdProjet();
             System.out.println("Projet créé avec succès.");
 
+            double totalCost = 0.0;
+
+            // Ajout de matériel
             System.out.println("Souhaitez-vous ajouter des matériaux pour ce projet ?");
             System.out.println("1. Oui");
             System.out.println("2. Non");
@@ -168,11 +151,12 @@ public class Main {
                     double coefficientQualite = scanner.nextDouble();
                     scanner.nextLine();
 
-                    // Création et ajout du matériel
-                    materielService.ajouterMateriel(nomMateriel, tauxTVA, coutUnitaire, quantite, coutTransport, coefficientQualite,idProjet);
+                    double coutMateriel = (coutUnitaire * quantite + coutTransport) * coefficientQualite * (1 + tauxTVA / 100);
+                    totalCost += coutMateriel;
+
+                    materielService.ajouterMateriel(nomMateriel, tauxTVA, coutUnitaire, quantite, coutTransport, coefficientQualite, idProjet);
                     System.out.println("Matériel ajouté avec succès.");
 
-                    // Demander à l'utilisateur s'il souhaite ajouter un autre matériel
                     System.out.println("Souhaitez-vous ajouter un autre matériel ?");
                     System.out.println("1. Oui");
                     System.out.println("2. Non");
@@ -185,7 +169,7 @@ public class Main {
                 }
             }
 
-
+            // Ajout de main d'œuvre
             System.out.println("Souhaitez-vous ajouter de la main d'œuvre pour ce projet ?");
             System.out.println("1. Oui");
             System.out.println("2. Non");
@@ -208,11 +192,12 @@ public class Main {
                     double coefficientQualite = scanner.nextDouble();
                     scanner.nextLine();
 
+                    double coutMainOeuvre = (tauxHoraire * heuresTravail + coutDeplacement) * coefficientQualite;
+                    totalCost += coutMainOeuvre;
 
-                    MainOeuvre mainOeuvre = new MainOeuvre(nomTache, tauxHoraire, heuresTravail, coutDeplacement, coefficientQualite,idProjet);
+                    MainOeuvre mainOeuvre = new MainOeuvre(nomTache, tauxHoraire, heuresTravail, coutDeplacement, coefficientQualite, idProjet);
                     mainOeuvreService.ajouterMainOeuvre(mainOeuvre);
                     System.out.println("Main d'œuvre ajoutée avec succès.");
-
 
                     System.out.println("Souhaitez-vous ajouter une autre tâche de main d'œuvre ?");
                     System.out.println("1. Oui");
@@ -226,7 +211,42 @@ public class Main {
                 }
             }
 
-            System.out.println("Projet créé avec succès avec les matériaux et la main d'œuvre ajoutés.");
+            projet.setCoutTotal(totalCost);
+
+            System.out.println("Coût total du projet (sans marge bénéficiaire) : " + totalCost);
+            System.out.println("Coût total du projet (avec marge bénéficiaire) : " + projet.calculerCoutTotalAvecMarge());
+
+            try {
+                projectService.mettreAJourCoutTotalProjet(projet.getIdProjet(), totalCost);
+                System.out.println("Coût total mis à jour avec succès dans la base de données.");
+            } catch (SQLException e) {
+                e.printStackTrace();
+                System.out.println("Erreur lors de la mise à jour du coût total dans la base de données.");
+            }
+
+            System.out.println("--- Enregistrement du Devis ---");
+            System.out.print("Entrez la date d'émission du devis (format : jj/mm/aaaa) : ");
+            String dateEmissionStr = scanner.nextLine().trim();
+            LocalDate dateEmission = LocalDate.parse(dateEmissionStr, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+
+            System.out.print("Entrez la date de validité du devis (format : jj/mm/aaaa) : ");
+            String dateValiditeStr = scanner.nextLine().trim();
+            LocalDate dateValidite = LocalDate.parse(dateValiditeStr, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+
+            System.out.print("Souhaitez-vous enregistrer le devis ? (y/n) : ");
+            String confirmation = scanner.nextLine();
+
+            boolean accepte = false;  // Initialiser la variable accepte
+            if (confirmation.equalsIgnoreCase("y")) {
+                accepte = true;
+                Devis devis = new Devis(dateEmission, dateValidite, projet.getIdProjet(), totalCost, accepte);
+                devisService.creerDevis(projet.getIdProjet(), totalCost, dateEmission, dateValidite, accepte);
+                System.out.println("Devis enregistré avec succès !");
+            } else {
+                System.out.println("Enregistrement du devis annulé.");
+            }
+
+            System.out.println("Projet créé avec succès avec les matériaux, la main d'œuvre, et le devis ajoutés.");
         } else {
             System.out.println("La création du projet a échoué. Aucun client sélectionné.");
         }

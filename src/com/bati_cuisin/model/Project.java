@@ -18,16 +18,17 @@ public class Project {
         ANNULE
     }
 
+    // Constructeur
     public Project(String nomProjet, int idClient, double margeBeneficiaire, EtatProjet etatProjet) {
         this.nomProjet = nomProjet;
         this.idClient = idClient;
         this.margeBeneficiaire = margeBeneficiaire;
-        this.etatProjet = EtatProjet.valueOf("EN_COURS");
+        this.etatProjet = etatProjet != null ? etatProjet : EtatProjet.EN_COURS;
         this.dateCreation = LocalDateTime.now();
         this.coutTotal = 0.0; // Initialisation du coût total
     }
 
-    // Getters and Setters
+    // Getters et Setters
     public int getIdProjet() {
         return idProjet;
     }
@@ -84,7 +85,7 @@ public class Project {
         this.dateCreation = dateCreation;
     }
 
-    // Méthode pour mettre à jour le coût total
+    // Méthode pour mettre à jour le coût total (ajout de coûts de matériaux ou de main d'œuvre)
     public void ajouterCout(double cout) {
         this.coutTotal += cout;
     }
