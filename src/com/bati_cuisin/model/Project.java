@@ -85,12 +85,12 @@ public class Project {
         this.dateCreation = dateCreation;
     }
 
-    // Méthode pour mettre à jour le coût total (ajout de coûts de matériaux ou de main d'œuvre)
+
     public void ajouterCout(double cout) {
         this.coutTotal += cout;
     }
 
-    // Méthode pour calculer le coût total avec la marge bénéficiaire
+
     public double calculerCoutTotalAvecMarge() {
         return this.coutTotal + (this.coutTotal * this.margeBeneficiaire / 100);
     }

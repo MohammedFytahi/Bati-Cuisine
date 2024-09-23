@@ -94,7 +94,6 @@ public class Main {
                 }
                 break;
 
-
             case 2:
                 System.out.print("Entrez le nom du client : ");
                 String nom = scanner.nextLine();
@@ -137,7 +136,7 @@ public class Main {
 
             double totalCost = 0.0;
 
-
+            // Ajout de matériaux
             System.out.println("Souhaitez-vous ajouter des matériaux pour ce projet ?");
             System.out.println("1. Oui");
             System.out.println("2. Non");
@@ -167,7 +166,7 @@ public class Main {
 
                     materielService.ajouterMateriel(nomMateriel, tauxTVA, coutUnitaire, quantite, coutTransport, coefficientQualite, idProjet);
                     System.out.println("Matériel ajouté avec succès.");
-                    System.out.println("le cout du materiel: "+ coutMateriel);
+                    System.out.println("le coût du matériel : " + coutMateriel);
 
                     System.out.println("Souhaitez-vous ajouter un autre matériel ?");
                     System.out.println("1. Oui");
@@ -181,7 +180,7 @@ public class Main {
                 }
             }
 
-
+            // Ajout de main d'œuvre
             System.out.println("Souhaitez-vous ajouter de la main d'œuvre pour ce projet ?");
             System.out.println("1. Oui");
             System.out.println("2. Non");
@@ -210,7 +209,7 @@ public class Main {
                     MainOeuvre mainOeuvre = new MainOeuvre(nomTache, tauxHoraire, heuresTravail, coutDeplacement, coefficientQualite, idProjet);
                     mainOeuvreService.ajouterMainOeuvre(mainOeuvre);
                     System.out.println("Main d'œuvre ajoutée avec succès.");
-                    System.out.println("le cout de main d'oeuvre: "+ coutMainOeuvre);
+                    System.out.println("le coût de main d'œuvre : " + coutMainOeuvre);
 
                     System.out.println("Souhaitez-vous ajouter une autre tâche de main d'œuvre ?");
                     System.out.println("1. Oui");
@@ -226,17 +225,21 @@ public class Main {
 
             projet.setCoutTotal(totalCost);
 
+            // Calcul du coût total avec remise
+            double coutTotalAvecRemise = calculerCoutTotalAvecRemise(totalCost, client);
             System.out.println("Coût total du projet (sans marge bénéficiaire) : " + totalCost);
             System.out.println("Coût total du projet (avec marge bénéficiaire) : " + projet.calculerCoutTotalAvecMarge());
+            System.out.println("Coût total du projet (avec remise) : " + coutTotalAvecRemise);
 
             try {
-                projectService.mettreAJourCoutTotalProjet(projet.getIdProjet(), totalCost);
+                projectService.mettreAJourCoutTotalProjet(projet.getIdProjet(), coutTotalAvecRemise);
                 System.out.println("Coût total mis à jour avec succès dans la base de données.");
             } catch (SQLException e) {
                 e.printStackTrace();
                 System.out.println("Erreur lors de la mise à jour du coût total dans la base de données.");
             }
 
+            // Enregistrement du devis
             System.out.println("--- Enregistrement du Devis ---");
             System.out.print("Entrez la date d'émission du devis (format : jj/mm/aaaa) : ");
             String dateEmissionStr = scanner.nextLine().trim();
@@ -252,8 +255,8 @@ public class Main {
             boolean accepte = false;
             if (confirmation.equalsIgnoreCase("y")) {
                 accepte = true;
-                Devis devis = new Devis(dateEmission, dateValidite, projet.getIdProjet(), totalCost, accepte);
-                devisService.creerDevis(projet.getIdProjet(), totalCost, dateEmission, dateValidite, accepte);
+                Devis devis = new Devis(dateEmission, dateValidite, projet.getIdProjet(), coutTotalAvecRemise, accepte);
+                devisService.creerDevis(projet.getIdProjet(), coutTotalAvecRemise, dateEmission, dateValidite, accepte);
                 System.out.println("Devis enregistré avec succès !");
             } else {
                 System.out.println("Enregistrement du devis annulé.");
@@ -263,6 +266,18 @@ public class Main {
         } else {
             System.out.println("La création du projet a échoué. Aucun client sélectionné.");
         }
+    }
+
+    // Méthode pour calculer le coût total avec remise
+    private static double calculerCoutTotalAvecRemise(double totalCost, Client client) {
+        final double REMISE_PROFESSIONNEL = 0.10; // 10% pour les professionnels
+        double remise = 0;
+
+        if (client.isEst_professionnel()) {
+            remise = REMISE_PROFESSIONNEL;
+        }
+
+        return totalCost * (1 - remise);
     }
 
 
