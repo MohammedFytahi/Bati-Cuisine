@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Bati_Cuisin:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Bati_Cuisin_jar</output-path>
+    <root id="archive" name="Bati_Cuisin.jar">
+      <element id="module-output" name="Bati_Cuisin" />
+      <element id="extracted-dir" path="$USER_HOME$/Downloads/postgresql-42.7.4.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
