@@ -1,14 +1,15 @@
-package com.bati_cuisin.repository;
+package com.bati_cuisin.repository.implementation;
 
 import com.bati_cuisin.database.DatabaseConnection;
 import com.bati_cuisin.model.Client;
+import com.bati_cuisin.repository.interfaces.ClientRepositoryInterface;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class ClientRepository implements ClientRepositoryInterface{
+public class ClientRepository implements ClientRepositoryInterface {
     private Connection connection;
     public ClientRepository(){
         try {

@@ -1,8 +1,7 @@
 package com.bati_cuisin.service;
 
 import com.bati_cuisin.model.MainOeuvre;
-import com.bati_cuisin.repository.MainOeuvreRepositoryInterface;
-import java.util.List;
+import com.bati_cuisin.repository.interfaces.MainOeuvreRepositoryInterface;
 
 public class MainOeuvreService {
 

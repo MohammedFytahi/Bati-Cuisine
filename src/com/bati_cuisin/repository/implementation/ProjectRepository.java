@@ -1,14 +1,17 @@
-package com.bati_cuisin.repository;
+package com.bati_cuisin.repository.implementation;
 
 
 
 import com.bati_cuisin.database.DatabaseConnection;
 import com.bati_cuisin.model.Project;
+import com.bati_cuisin.repository.interfaces.ProjectRepositoryInterface;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class ProjectRepository implements ProjectRepositoryInterface {
@@ -49,7 +52,33 @@ public class ProjectRepository implements ProjectRepositoryInterface {
     }
 
 
+    @Override
+    public List<Project> findAll() {
+        List<Project> projets = new ArrayList<>();
+        String sql = "SELECT * FROM projet"; // Sélectionne tous les projets
 
+        try (PreparedStatement stmt = connection.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                Project projet = new Project(
+                        rs.getString("nom_projet"),
+                        rs.getInt("id_client"),
+                        rs.getDouble("marge_beneficiaire"),
+                        Project.EtatProjet.valueOf(rs.getString("etat_projet"))
+                );
+                projet.setIdProjet(rs.getInt("id_projet"));
+                projet.setCoutTotal(rs.getDouble("cout_total"));
+                projet.setDateCreation(rs.getTimestamp("date_creation").toLocalDateTime());
+
+                projets.add(projet); // Ajoute le projet à la liste
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return projets; // Retourne la liste des projets
+    }
 
     @Override
     public Optional<Project> trouverProjetParId(int idProjet) {
@@ -67,17 +96,17 @@ public class ProjectRepository implements ProjectRepositoryInterface {
                 project.setIdProjet(rs.getInt("id_projet"));
                 project.setCoutTotal(rs.getDouble("cout_total"));
                 project.setDateCreation(rs.getTimestamp("date_creation").toLocalDateTime());
-
-                // Return the project wrapped in an Optional
                 return Optional.of(project);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        // If no project is found, return an empty Optional
-        return Optional.empty();
+        return null;
     }
+
+
+
+
 
     @Override
     public void updateCoutTotal(int idProjet, double coutTotal) throws SQLException {
@@ -91,5 +120,18 @@ public class ProjectRepository implements ProjectRepositoryInterface {
             throw e;
         }
     }
+
+    @Override
+    public void updateProjectState(int projectId, Project.EtatProjet newState) {
+        String sql = "UPDATE projet SET etat_projet = ? WHERE id_projet = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, newState.name());
+            stmt.setInt(2, projectId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 }

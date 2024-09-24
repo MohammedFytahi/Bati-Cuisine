@@ -1,4 +1,4 @@
-package com.bati_cuisin.repository;
+package com.bati_cuisin.repository.interfaces;
 
 import com.bati_cuisin.model.Client;
 

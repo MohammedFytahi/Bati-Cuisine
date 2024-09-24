@@ -1,7 +1,7 @@
 package com.bati_cuisin.service;
 
 import com.bati_cuisin.model.Materiel;
-import com.bati_cuisin.repository.MaterielRepositoryInterface;
+import com.bati_cuisin.repository.interfaces.MaterielRepositoryInterface;
 
 public class MaterielService {
     private MaterielRepositoryInterface materielRepository;

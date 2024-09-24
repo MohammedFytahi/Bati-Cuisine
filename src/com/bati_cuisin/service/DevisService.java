@@ -1,7 +1,7 @@
 package com.bati_cuisin.service;
 
 import com.bati_cuisin.model.Devis;
-import com.bati_cuisin.repository.DevisRepositoryInterface;
+import com.bati_cuisin.repository.interfaces.DevisRepositoryInterface;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -34,7 +34,7 @@ public class DevisService {
         devisRepository.supprimerDevis(idDevis);
     }
 
-    // Obtenir tous les devis
+
     public List<Devis> obtenirTousLesDevis() {
         return devisRepository.obtenirTousLesDevis();
     }

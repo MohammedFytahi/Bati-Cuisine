@@ -12,6 +12,7 @@ public class Project {
     private LocalDateTime dateCreation;
 
 
+
     public enum EtatProjet {
         EN_COURS,
         TERMINE,
@@ -93,5 +94,19 @@ public class Project {
 
     public double calculerCoutTotalAvecMarge() {
         return this.coutTotal + (this.coutTotal * this.margeBeneficiaire / 100);
+    }
+
+
+    @Override
+    public String toString() {
+        return "Project{" +
+                "idProjet=" + idProjet +
+                ", nomProjet='" + nomProjet + '\'' +
+                ", idClient=" + idClient +
+                ", margeBeneficiaire=" + margeBeneficiaire +
+                ", coutTotal=" + coutTotal +
+                ", etatProjet=" + etatProjet +
+                ", dateCreation=" + dateCreation +
+                '}';
     }
 }

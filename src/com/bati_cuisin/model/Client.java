@@ -15,7 +15,7 @@ public class Client {
         this.est_professionnel = false;
     }
 
-    //constructor with id
+
     public Client(int id,String nom, String adresse, String telephone, boolean est_professionnel){
         this.id= id;
         this.nom = nom;
@@ -66,5 +66,16 @@ public class Client {
 
     public boolean isEst_professionnel() {
         return est_professionnel;
+    }
+
+    @Override
+    public String toString() {
+        return "Client{" +
+                "id=" + id +
+                ", nom='" + nom + '\'' +
+                ", adresse='" + adresse + '\'' +
+                ", telephone='" + telephone + '\'' +
+                ", estProfessionnel=" + est_professionnel +
+                '}';
     }
 }

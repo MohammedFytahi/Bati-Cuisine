@@ -1,13 +1,11 @@
 package com.bati_cuisin.main;
 
 import com.bati_cuisin.model.*;
-import com.bati_cuisin.repository.*;
+import com.bati_cuisin.repository.implementation.*;
 import com.bati_cuisin.service.*;
 import com.bati_cuisin.util.InputValidator;
 import com.bati_cuisin.util.ValidationException;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -44,9 +42,11 @@ public class Main {
                     break;
                 case 2:
 
+                    projectService.displayAllProjects();
                     break;
                 case 3:
 
+                    projectService.changeProjectState();
                     break;
                 case 4:
                     System.out.println("Merci d'utiliser notre application. À bientôt !");
@@ -63,7 +63,7 @@ public class Main {
         System.out.println("=== Menu Principal ===");
         System.out.println("1. Créer un nouveau projet");
         System.out.println("2. Afficher les projets existants");
-        System.out.println("3. Calculer le coût d'un projet");
+        System.out.println("3. Modifier l'etat d'un projet");
         System.out.println("4. Quitter");
         System.out.print("Choisissez une option : ");
     }
@@ -227,7 +227,7 @@ public class Main {
                         }
                     }
 
-                    
+
                     while (true) {
                         System.out.print("Entrez le taux de TVA : ");
                         if (scanner.hasNextDouble()) {
@@ -501,7 +501,9 @@ public class Main {
                 devisService.creerDevis(projet.getIdProjet(), coutTotalAvecRemise, dateEmission, dateValidite, accepte);
                 System.out.println("Devis enregistré avec succès !");
             } else {
-                System.out.println("Enregistrement du devis annulé.");
+                projet.setEtatProjet(Project.EtatProjet.ANNULE);
+                projectService.updateProjectState(projet.getIdProjet(), Project.EtatProjet.ANNULE);  // Méthode pour mettre à jour l'état dans la base de données
+                System.out.println("Enregistrement du devis annulé et projet marqué comme ANNULE.");
             }
 
 

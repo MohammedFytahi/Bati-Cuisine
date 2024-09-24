@@ -1,7 +1,8 @@
-package com.bati_cuisin.repository;
+package com.bati_cuisin.repository.implementation;
 
 import com.bati_cuisin.database.DatabaseConnection;
 import com.bati_cuisin.model.Devis;
+import com.bati_cuisin.repository.interfaces.DevisRepositoryInterface;
 
 import java.sql.*;
 import java.time.LocalDate;

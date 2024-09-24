@@ -37,5 +37,14 @@ public class MainOeuvre extends Composant {
     public void setProductiviteOuvrier(double productiviteOuvrier) {
         this.productiviteOuvrier = productiviteOuvrier;
     }
+    @Override
+    public String toString() {
+        return "MainOeuvre{" +
+                "nom='" + getNom() + '\'' +
+                ", tauxHoraire=" + tauxHoraire +
+                ", heuresTravail=" + heuresTravail +
+                ", productiviteOuvrier=" + productiviteOuvrier +
+                '}';
+    }
 }
 

@@ -1,10 +1,15 @@
-package com.bati_cuisin.repository;
+package com.bati_cuisin.repository.implementation;
 
 import com.bati_cuisin.database.DatabaseConnection;
 import com.bati_cuisin.model.Materiel;
+import com.bati_cuisin.repository.interfaces.MaterielRepositoryInterface;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MaterielRepository implements MaterielRepositoryInterface {
 
@@ -34,6 +39,34 @@ public class MaterielRepository implements MaterielRepositoryInterface {
             e.printStackTrace();
         }
     }
+
+    private List<Materiel> findMaterialsByProjectId(int idProjet) {
+        List<Materiel> materiaux = new ArrayList<>();
+        String sql = "SELECT * FROM materiel WHERE id_projet = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, idProjet);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Materiel materiel = new Materiel(
+                        rs.getString("nom"),
+                        rs.getDouble("taux_tva"),
+                        rs.getDouble("cout_unitaire"),
+                        rs.getDouble("quantite"),
+                        rs.getDouble("cout_transport"),
+                        rs.getDouble("coefficient_qualite"),
+                        rs.getInt("id_projet")
+                );
+                materiaux.add(materiel);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return materiaux;
+    }
+
 
 
 }

@@ -1,10 +1,15 @@
-package com.bati_cuisin.repository;
+package com.bati_cuisin.repository.implementation;
 
 import com.bati_cuisin.database.DatabaseConnection;
 import com.bati_cuisin.model.MainOeuvre;
+import com.bati_cuisin.repository.interfaces.MainOeuvreRepositoryInterface;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainOeuvreRepository implements MainOeuvreRepositoryInterface {
     private Connection connection;
@@ -35,5 +40,32 @@ public class MainOeuvreRepository implements MainOeuvreRepositoryInterface {
             e.printStackTrace();
         }
     }
+
+    private List<MainOeuvre> findMainOeuvreByProjectId(int idProjet) {
+        List<MainOeuvre> mainOeuvres = new ArrayList<>();
+        String sql = "SELECT * FROM main_oeuvre WHERE id_projet = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, idProjet);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                MainOeuvre mainOeuvre = new MainOeuvre(
+                        rs.getString("nom"),
+                        rs.getDouble("taux_tva"),
+                        rs.getDouble("taux_horaire"),
+                        rs.getDouble("heures_travail"),
+                        rs.getDouble("productivite_ouvrier"),
+                        rs.getInt("id_projet")
+                );
+                mainOeuvres.add(mainOeuvre);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return mainOeuvres;
+    }
+
 
 }

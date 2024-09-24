@@ -1,7 +1,6 @@
-package com.bati_cuisin.repository;
+package com.bati_cuisin.repository.interfaces;
 
 import com.bati_cuisin.model.MainOeuvre;
-import java.util.List;
 
 public interface MainOeuvreRepositoryInterface {
 

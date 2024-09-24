@@ -17,6 +17,9 @@
         }
 
 
+
+
+
         public double getCoutUnitaire() {
             return coutUnitaire;
         }
@@ -47,6 +50,16 @@
 
         public void setCoefficientQualite(double coefficientQualite) {
             this.coefficientQualite = coefficientQualite;
+        }
+        @Override
+        public String toString() {
+            return "Materiel{" +
+                    "nom='" + getNom() + '\'' +
+                    ", coutUnitaire=" + coutUnitaire +
+                    ", quantite=" + quantite +
+                    ", coutTransport=" + coutTransport +
+                    ", coefficientQualite=" + coefficientQualite +
+                    '}';
         }
 
     }
