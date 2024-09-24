@@ -16,7 +16,7 @@
             this.coefficientQualite = coefficientQualite;
         }
 
-        // Getters et setters pour les attributs spécifiques
+
         public double getCoutUnitaire() {
             return coutUnitaire;
         }

@@ -29,20 +29,20 @@ public class ClientRepository implements ClientRepositoryInterface{
             pstmt.setString(3, client.getTelephone());
             pstmt.setBoolean(4, client.isEst_professionnel());
 
-            // Execute the update
+
             pstmt.executeUpdate();
 
-            // Retrieve the generated keys
+
             try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    return generatedKeys.getInt(1); // Return the generated ID
+                    return generatedKeys.getInt(1);
                 } else {
                     throw new SQLException("Échec de l'obtention de l'ID du client.");
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            throw e; // Rethrow the exception after logging it
+            throw e;
         }
     }
 
@@ -63,7 +63,7 @@ public class ClientRepository implements ClientRepositoryInterface{
                 }
             }
         }
-        return null; // Si aucun client n'est trouvé
+        return null;
     }
 
 

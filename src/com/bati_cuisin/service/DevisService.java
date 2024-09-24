@@ -14,22 +14,22 @@ public class DevisService {
         this.devisRepository = devisRepository;
     }
 
-    // Créer un devis
+
     public void creerDevis(int idProjet, double montantEstime, LocalDate dateEmission, LocalDate dateValidite, boolean accepte) {
-        devisRepository.insererDevis(idProjet, montantEstime, dateEmission, dateValidite, false);
+        devisRepository.insererDevis(idProjet, montantEstime, dateEmission, dateValidite, accepte);
     }
 
-    // Obtenir un devis par son ID
+
     public Devis obtenirDevisParId(int idDevis) {
         return devisRepository.obtenirDevisParId(idDevis);
     }
 
-    // Accepter ou refuser un devis
+
     public void accepterDevis(int idDevis, boolean accepte) {
         devisRepository.mettreAJourStatutDevis(idDevis, accepte);
     }
 
-    // Supprimer un devis
+
     public void supprimerDevis(int idDevis) {
         devisRepository.supprimerDevis(idDevis);
     }

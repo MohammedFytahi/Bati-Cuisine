@@ -27,7 +27,7 @@ public class MainOeuvreRepository implements MainOeuvreRepositoryInterface {
             stmt.setDouble(3, mainOeuvre.getTauxHoraire());
             stmt.setDouble(4, mainOeuvre.getHeuresTravail());
             stmt.setDouble(5, mainOeuvre.getProductiviteOuvrier());
-            stmt.setInt(6, mainOeuvre.getId_projet()); // Ajout de l'ID du projet
+            stmt.setInt(6, mainOeuvre.getId_projet());
 
             stmt.executeUpdate();
             System.out.println("Main d'œuvre ajoutée avec succès.");

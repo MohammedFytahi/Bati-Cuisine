@@ -7,28 +7,28 @@ public class Project {
     private String nomProjet;
     private int idClient;
     private double margeBeneficiaire;
-    private double coutTotal; // Initialisé à 0
+    private double coutTotal;
     private EtatProjet etatProjet;
     private LocalDateTime dateCreation;
 
-    // Enum pour l'état du projet
+
     public enum EtatProjet {
         EN_COURS,
         TERMINE,
         ANNULE
     }
 
-    // Constructeur
+
     public Project(String nomProjet, int idClient, double margeBeneficiaire, EtatProjet etatProjet) {
         this.nomProjet = nomProjet;
         this.idClient = idClient;
         this.margeBeneficiaire = margeBeneficiaire;
         this.etatProjet = etatProjet != null ? etatProjet : EtatProjet.EN_COURS;
         this.dateCreation = LocalDateTime.now();
-        this.coutTotal = 0.0; // Initialisation du coût total
+        this.coutTotal = 0.0;
     }
 
-    // Getters et Setters
+
     public int getIdProjet() {
         return idProjet;
     }

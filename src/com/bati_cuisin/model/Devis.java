@@ -22,7 +22,7 @@ public class Devis {
     public Devis(LocalDate dateEmission, LocalDate dateValidite, int idProjet, double totalCost, boolean accepte) {
     }
 
-    // Getters et Setters
+
     public int getIdDevis() {
         return idDevis;
     }

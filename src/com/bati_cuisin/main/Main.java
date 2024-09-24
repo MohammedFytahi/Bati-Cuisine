@@ -3,6 +3,8 @@ package com.bati_cuisin.main;
 import com.bati_cuisin.model.*;
 import com.bati_cuisin.repository.*;
 import com.bati_cuisin.service.*;
+import com.bati_cuisin.util.InputValidator;
+import com.bati_cuisin.util.ValidationException;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -23,6 +25,7 @@ public class Main {
         MaterielRepository materielRepository = new MaterielRepository();
         MainOeuvreRepository mainOeuvreRepository = new MainOeuvreRepository();
         DevisRepository devisRepository = new DevisRepository();
+        InputValidator validator = new InputValidator();
 
         ProjectService projectService = new ProjectService(projectRepository);
         ClientService clientService = new ClientService(clientRepository);
@@ -37,7 +40,7 @@ public class Main {
 
             switch (choix) {
                 case 1:
-                    creerNouveauProjet(projectService, clientService, materielService, mainOeuvreService,devisService);
+                    creerNouveauProjet(projectService, clientService, materielService, mainOeuvreService,devisService, validator);
                     break;
                 case 2:
 
@@ -65,7 +68,7 @@ public class Main {
         System.out.print("Choisissez une option : ");
     }
 
-    private static void creerNouveauProjet(ProjectService projectService, ClientService clientService, MaterielService materielService, MainOeuvreService mainOeuvreService, DevisService devisService) {
+    private static void creerNouveauProjet(ProjectService projectService, ClientService clientService, MaterielService materielService, MainOeuvreService mainOeuvreService, DevisService devisService, InputValidator validator) {
         System.out.println("--- Recherche de client ---");
         System.out.println("Souhaitez-vous chercher un client existant ou en ajouter un nouveau ?");
         System.out.println("1. Chercher un client existant");
@@ -95,24 +98,64 @@ public class Main {
                 break;
 
             case 2:
-                System.out.print("Entrez le nom du client : ");
-                String nom = scanner.nextLine();
-                System.out.print("Entrez l'adresse du client : ");
-                String adresse = scanner.nextLine();
-                System.out.print("Entrez le numéro de téléphone du client : ");
-                String telephone = scanner.nextLine();
+                String nom = "";
+
+                while (true) {
+                    System.out.print("Entrez le nom du client : ");
+                    nom = scanner.nextLine();
+
+
+                    if (InputValidator.validateName(nom)) {
+
+                        break;
+                    } else {
+
+                        System.out.println("Nom invalide. Veuillez entrer un nom valide.");
+                    }
+                }
+                String adresse = "";
+                while (true) {
+                    System.out.print("Entrez l'adresse du client : ");
+                    adresse = scanner.nextLine();
+
+                    if (InputValidator.validateAddress(adresse)) {
+                        break;
+                    } else {
+                        System.out.println("Adresse invalide. Veuillez entrer une adresse valide.");
+                    }
+                }
+
+                String telephone = "";
+
+                while (true) {
+                    System.out.print("Entrez le numéro de téléphone du client (10 chiffres) : ");
+                    telephone = scanner.nextLine();
+
+
+                    if (InputValidator.validatePhoneNumber(telephone)) {
+                        break;
+                    } else {
+                        System.out.println("Numéro de téléphone invalide. Il doit contenir exactement 10 chiffres.");
+                    }
+                }
                 System.out.print("Est-ce un professionnel ? (true/false) : ");
                 boolean estProfessionnel = scanner.nextBoolean();
                 scanner.nextLine();
 
                 client = new Client(nom, adresse, telephone, estProfessionnel);
                 try {
+
+                    validator.validateClient(client);
                     int clientId = clientService.addClient(client);
                     client.setId(clientId);
                     System.out.println("Client ajouté avec succès.");
+                } catch (ValidationException e) {
+                    System.out.println("Erreur de validation : " + e.getMessage());
+                    return;
                 } catch (SQLException e) {
                     e.printStackTrace();
                     System.out.println("Erreur lors de l'ajout du client.");
+                    return;
                 }
                 break;
 
@@ -122,21 +165,46 @@ public class Main {
         }
 
         if (client != null) {
-            System.out.print("Entrez le nom du projet : ");
-            String nomProjet = scanner.nextLine();
+            String nomProjet;
+            double margeBeneficiaire;
 
-            System.out.print("Entrez la marge bénéficiaire : ");
-            double margeBeneficiaire = scanner.nextDouble();
-            scanner.nextLine();
+
+            while (true) {
+                System.out.print("Entrez le nom du projet : ");
+                nomProjet = scanner.nextLine();
+
+                if (InputValidator.validateName(nomProjet)) {
+                    break;
+                } else {
+                    System.out.println("Nom de projet invalide. Veuillez entrer un nom valide.");
+                }
+            }
+
+
+            while (true) {
+                System.out.print("Entrez la marge bénéficiaire : ");
+                if (scanner.hasNextDouble()) {
+                    margeBeneficiaire = scanner.nextDouble();
+                    if (margeBeneficiaire > 0) {
+                        break;
+                    } else {
+                        System.out.println("La marge bénéficiaire doit être un nombre positif.");
+                    }
+                } else {
+                    System.out.println("Veuillez entrer un nombre valide pour la marge bénéficiaire.");
+                    scanner.next();
+                }
+            }
+
 
             Project projet = new Project(nomProjet, client.getId(), margeBeneficiaire, Project.EtatProjet.EN_COURS);
             projectService.creerNouveauProjet(projet);
             int idProjet = projet.getIdProjet();
-            System.out.println("Projet créé avec succès.");
+            System.out.println("Projet créé avec succès avec ID: " + idProjet);
 
             double totalCost = 0.0;
 
-            // Ajout de matériaux
+
             System.out.println("Souhaitez-vous ajouter des matériaux pour ce projet ?");
             System.out.println("1. Oui");
             System.out.println("2. Non");
@@ -146,20 +214,96 @@ public class Main {
             if (choixMateriel == 1) {
                 boolean continuerAjout = true;
                 while (continuerAjout) {
-                    System.out.println("--- Ajout de Matériel ---");
-                    System.out.print("Entrez le nom du matériel : ");
-                    String nomMateriel = scanner.nextLine();
-                    System.out.print("Entrez le taux de TVA : ");
-                    double tauxTVA = scanner.nextDouble();
-                    System.out.print("Entrez le coût unitaire : ");
-                    double coutUnitaire = scanner.nextDouble();
-                    System.out.print("Entrez la quantité : ");
-                    double quantite = scanner.nextDouble();
-                    System.out.print("Entrez le coût de transport : ");
-                    double coutTransport = scanner.nextDouble();
-                    System.out.print("Entrez le coefficient de qualité : ");
-                    double coefficientQualite = scanner.nextDouble();
-                    scanner.nextLine();
+                    String nomMateriel;
+                    double tauxTVA, coutUnitaire, quantite, coutTransport, coefficientQualite;
+                    while (true) {
+                        System.out.print("Entrez le nom du matériel : ");
+                        nomMateriel = scanner.nextLine();
+
+                        if (InputValidator.validateName(nomMateriel)) {
+                            break;
+                        } else {
+                            System.out.println("Nom de matériel invalide. Veuillez entrer un nom valide.");
+                        }
+                    }
+
+                    
+                    while (true) {
+                        System.out.print("Entrez le taux de TVA : ");
+                        if (scanner.hasNextDouble()) {
+                            tauxTVA = scanner.nextDouble();
+                            if (InputValidator.validateVAT(tauxTVA)) {
+                                break;
+                            } else {
+                                System.out.println("Le taux de TVA doit être un nombre positif.");
+                            }
+                        } else {
+                            System.out.println("Veuillez entrer un nombre valide pour le taux de TVA.");
+                            scanner.next();
+                        }
+                    }
+
+                    while (true) {
+                        System.out.print("Entrez le coût unitaire : ");
+                        if (scanner.hasNextDouble()) {
+                            coutUnitaire = scanner.nextDouble();
+                            if (InputValidator.validateUnitCost(coutUnitaire)) {
+                                break;
+                            } else {
+                                System.out.println("Le coût unitaire doit être un nombre positif.");
+                            }
+                        } else {
+                            System.out.println("Veuillez entrer un nombre valide pour le coût unitaire.");
+                            scanner.next();
+                        }
+                    }
+
+
+                    while (true) {
+                        System.out.print("Entrez la quantité : ");
+                        if (scanner.hasNextDouble()) {
+                            quantite = scanner.nextDouble();
+                            if (InputValidator.validateQuantity(quantite)) {
+                                break;
+                            } else {
+                                System.out.println("La quantité doit être un nombre positif.");
+                            }
+                        } else {
+                            System.out.println("Veuillez entrer un nombre valide pour la quantité.");
+                            scanner.next();
+                        }
+                    }
+
+                    while (true) {
+                        System.out.print("Entrez le coût de transport : ");
+                        if (scanner.hasNextDouble()) {
+                            coutTransport = scanner.nextDouble();
+                            if (InputValidator.validateTransportCost(coutTransport)) {
+                                break;
+                            } else {
+                                System.out.println("Le coût de transport doit être un nombre positif.");
+                            }
+                        } else {
+                            System.out.println("Veuillez entrer un nombre valide pour le coût de transport.");
+                            scanner.next();
+                        }
+                    }
+
+
+                    while (true) {
+                        System.out.print("Entrez le coefficient de qualité : ");
+                        if (scanner.hasNextDouble()) {
+                            coefficientQualite = scanner.nextDouble();
+                            if (InputValidator.validateQualityCoefficient(coefficientQualite)) {
+                                break;
+                            } else {
+                                System.out.println("Le coefficient de qualité doit être un nombre positif.");
+                            }
+                        } else {
+                            System.out.println("Veuillez entrer un nombre valide pour le coefficient de qualité.");
+                            scanner.next();
+                        }
+                    }
 
                     double coutMateriel = (coutUnitaire * quantite + coutTransport) * coefficientQualite * (1 + tauxTVA / 100);
                     totalCost += coutMateriel;
@@ -180,7 +324,7 @@ public class Main {
                 }
             }
 
-            // Ajout de main d'œuvre
+
             System.out.println("Souhaitez-vous ajouter de la main d'œuvre pour ce projet ?");
             System.out.println("1. Oui");
             System.out.println("2. Non");
@@ -189,19 +333,82 @@ public class Main {
 
             if (choixMainOeuvre == 1) {
                 boolean continuerAjoutMainOeuvre = true;
+                String nomTache;
+                double tauxHoraire, heuresTravail, coutDeplacement, coefficientQualite;
                 while (continuerAjoutMainOeuvre) {
-                    System.out.println("--- Ajout de Main d'Œuvre ---");
-                    System.out.print("Entrez le nom de la tâche : ");
-                    String nomTache = scanner.nextLine();
-                    System.out.print("Entrez le taux horaire : ");
-                    double tauxHoraire = scanner.nextDouble();
-                    System.out.print("Entrez le nombre d'heures de travail : ");
-                    double heuresTravail = scanner.nextDouble();
-                    System.out.print("Entrez le coût de déplacement : ");
-                    double coutDeplacement = scanner.nextDouble();
-                    System.out.print("Entrez le coefficient de qualité : ");
-                    double coefficientQualite = scanner.nextDouble();
-                    scanner.nextLine();
+                    while (true) {
+                        System.out.print("Entrez le nom de la tâche : ");
+                        nomTache = scanner.nextLine();
+
+                        if (InputValidator.validateTaskName(nomTache)) {
+                            break;
+                        } else {
+                            System.out.println("Nom de tâche invalide. Veuillez entrer un nom valide.");
+                        }
+                    }
+
+                    while (true) {
+                        System.out.print("Entrez le taux horaire : ");
+                        if (scanner.hasNextDouble()) {
+                            tauxHoraire = scanner.nextDouble();
+                            if (InputValidator.validateHourlyRate(tauxHoraire)) {
+                                break;
+                            } else {
+                                System.out.println("Le taux horaire doit être un nombre positif.");
+                            }
+                        } else {
+                            System.out.println("Veuillez entrer un nombre valide pour le taux horaire.");
+                            scanner.next();
+                        }
+                    }
+
+
+                    while (true) {
+                        System.out.print("Entrez le nombre d'heures de travail : ");
+                        if (scanner.hasNextDouble()) {
+                            heuresTravail = scanner.nextDouble();
+                            if (InputValidator.validateWorkHours(heuresTravail)) {
+                                break;
+                            } else {
+                                System.out.println("Le nombre d'heures de travail doit être un nombre positif.");
+                            }
+                        } else {
+                            System.out.println("Veuillez entrer un nombre valide pour les heures de travail.");
+                            scanner.next();
+                        }
+                    }
+
+
+                    while (true) {
+                        System.out.print("Entrez le coût de déplacement : ");
+                        if (scanner.hasNextDouble()) {
+                            coutDeplacement = scanner.nextDouble();
+                            if (InputValidator.validateTravelCost(coutDeplacement)) {
+                                break;
+                            } else {
+                                System.out.println("Le coût de déplacement doit être un nombre positif.");
+                            }
+                        } else {
+                            System.out.println("Veuillez entrer un nombre valide pour le coût de déplacement.");
+                            scanner.next();
+                        }
+                    }
+
+
+                    while (true) {
+                        System.out.print("Entrez le coefficient de qualité : ");
+                        if (scanner.hasNextDouble()) {
+                            coefficientQualite = scanner.nextDouble();
+                            if (InputValidator.validateQualityCoefficient(coefficientQualite)) {
+                                break;
+                            } else {
+                                System.out.println("Le coefficient de qualité doit être un nombre positif.");
+                            }
+                        } else {
+                            System.out.println("Veuillez entrer un nombre valide pour le coefficient de qualité.");
+                            scanner.next();
+                        }
+                    }
 
                     double coutMainOeuvre = (tauxHoraire * heuresTravail + coutDeplacement) * coefficientQualite;
                     totalCost += coutMainOeuvre;
@@ -225,7 +432,7 @@ public class Main {
 
             projet.setCoutTotal(totalCost);
 
-            // Calcul du coût total avec remise
+
             double coutTotalAvecRemise = calculerCoutTotalAvecRemise(totalCost, client);
             System.out.println("Coût total du projet (sans marge bénéficiaire) : " + totalCost);
             System.out.println("Coût total du projet (avec marge bénéficiaire) : " + projet.calculerCoutTotalAvecMarge());
@@ -239,8 +446,25 @@ public class Main {
                 System.out.println("Erreur lors de la mise à jour du coût total dans la base de données.");
             }
 
-            // Enregistrement du devis
+
+
+
             System.out.println("--- Enregistrement du Devis ---");
+            System.out.println("Voici un résumé du devis :");
+
+
+            System.out.println("Client : ");
+            System.out.println("Nom : " + client.getNom());
+            System.out.println("Adresse : " + client.getAdresse());
+            System.out.println("Téléphone : " + client.getTelephone());
+            System.out.println("Client professionnel : " + (client.isEst_professionnel() ? "Oui" : "Non"));
+
+
+            System.out.println("Coût total du projet (sans marge bénéficiaire) : " + totalCost);
+            System.out.println("Coût total du projet (avec marge bénéficiaire) : " + projet.calculerCoutTotalAvecMarge());
+            System.out.println("Coût total du projet (avec remise) : " + coutTotalAvecRemise);
+
+
             System.out.print("Entrez la date d'émission du devis (format : jj/mm/aaaa) : ");
             String dateEmissionStr = scanner.nextLine().trim();
             LocalDate dateEmission = LocalDate.parse(dateEmissionStr, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
@@ -248,6 +472,24 @@ public class Main {
             System.out.print("Entrez la date de validité du devis (format : jj/mm/aaaa) : ");
             String dateValiditeStr = scanner.nextLine().trim();
             LocalDate dateValidite = LocalDate.parse(dateValiditeStr, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+
+
+            System.out.println("\nRésumé du devis :");
+            System.out.println("Client : ");
+            System.out.println("Nom : " + client.getNom());
+            System.out.println("Adresse : " + client.getAdresse());
+            System.out.println("Téléphone : " + client.getTelephone());
+            System.out.println("Client professionnel : " + (client.isEst_professionnel() ? "Oui" : "Non"));
+
+
+            System.out.println("Coût total du projet (sans marge bénéficiaire) : " + totalCost);
+            System.out.println("Coût total du projet (avec marge bénéficiaire) : " + projet.calculerCoutTotalAvecMarge());
+            System.out.println("Coût total du projet (avec remise) : " + coutTotalAvecRemise);
+
+            System.out.println("Nom du projet : " + projet.getNomProjet());
+            System.out.println("Coût total avec remise : " + coutTotalAvecRemise);
+            System.out.println("Date d'émission : " + dateEmission);
+            System.out.println("Date de validité : " + dateValidite);
 
             System.out.print("Souhaitez-vous enregistrer le devis ? (y/n) : ");
             String confirmation = scanner.nextLine();
@@ -262,15 +504,16 @@ public class Main {
                 System.out.println("Enregistrement du devis annulé.");
             }
 
+
             System.out.println("Projet créé avec succès avec les matériaux, la main d'œuvre, et le devis ajoutés.");
         } else {
             System.out.println("La création du projet a échoué. Aucun client sélectionné.");
         }
     }
 
-    // Méthode pour calculer le coût total avec remise
+
     private static double calculerCoutTotalAvecRemise(double totalCost, Client client) {
-        final double REMISE_PROFESSIONNEL = 0.10; // 10% pour les professionnels
+        final double REMISE_PROFESSIONNEL = 0.10;
         double remise = 0;
 
         if (client.isEst_professionnel()) {

@@ -6,6 +6,7 @@ import com.bati_cuisin.model.Project;
 import com.bati_cuisin.repository.ProjectRepositoryInterface;
 
 import java.sql.SQLException;
+import java.util.Optional;
 
 public class ProjectService {
     private ProjectRepositoryInterface projectRepository;
@@ -24,9 +25,14 @@ public class ProjectService {
     }
 
 
+
     public Project consulterProjet(int idProjet) {
-        return projectRepository.trouverProjetParId(idProjet);
+        Optional<Project> optionalProject = projectRepository.trouverProjetParId(idProjet);
+
+        // Handling the Optional. If a project is present, return it, otherwise throw an exception or handle the case
+        return optionalProject.orElseThrow(() -> new IllegalArgumentException("Projet avec l'ID " + idProjet + " n'existe pas."));
     }
+
 
     public void mettreAJourCoutTotalProjet(int idProjet, double coutTotal) throws SQLException {
         projectRepository.updateCoutTotal(idProjet, coutTotal);

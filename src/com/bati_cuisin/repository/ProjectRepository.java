@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Optional;
 
 public class ProjectRepository implements ProjectRepositoryInterface {
     private Connection connection;
@@ -51,7 +52,7 @@ public class ProjectRepository implements ProjectRepositoryInterface {
 
 
     @Override
-    public Project trouverProjetParId(int idProjet) {
+    public Optional<Project> trouverProjetParId(int idProjet) {
         String sql = "SELECT * FROM projet WHERE id_projet = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, idProjet);
@@ -66,14 +67,17 @@ public class ProjectRepository implements ProjectRepositoryInterface {
                 project.setIdProjet(rs.getInt("id_projet"));
                 project.setCoutTotal(rs.getDouble("cout_total"));
                 project.setDateCreation(rs.getTimestamp("date_creation").toLocalDateTime());
-                return project;
+
+                // Return the project wrapped in an Optional
+                return Optional.of(project);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
-    }
 
+        // If no project is found, return an empty Optional
+        return Optional.empty();
+    }
 
     @Override
     public void updateCoutTotal(int idProjet, double coutTotal) throws SQLException {

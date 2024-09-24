@@ -12,7 +12,7 @@ public abstract class Composant {
         this.id_projet = id_projet;
     }
 
-    // Getters et setters pour les attributs communs
+
     public String getNom() {
         return nom;
     }
