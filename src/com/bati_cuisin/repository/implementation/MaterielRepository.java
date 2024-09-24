@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class MaterielRepository implements MaterielRepositoryInterface {
 
@@ -33,14 +34,14 @@ public class MaterielRepository implements MaterielRepositoryInterface {
             stmt.setDouble(4, materiel.getQuantite());
             stmt.setDouble(5, materiel.getCoutTransport());
             stmt.setDouble(6, materiel.getCoefficientQualite());
-            stmt.setInt(7, materiel.getId_projet()); // Ajout de l'ID du projet
+            stmt.setInt(7, materiel.getId_projet());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
     @Override
-    public List<Materiel> findMaterialsByProjectId(int idProjet) {
+    public Optional<List<Materiel>> findMaterialsByProjectId(int idProjet) {
         List<Materiel> materiaux = new ArrayList<>();
         String sql = "SELECT * FROM materiel WHERE id_projet = ?";
 
@@ -64,9 +65,9 @@ public class MaterielRepository implements MaterielRepositoryInterface {
             e.printStackTrace();
         }
 
-        return materiaux;
-    }
 
+        return materiaux.isEmpty() ? Optional.empty() : Optional.of(materiaux);
+    }
 
 
 

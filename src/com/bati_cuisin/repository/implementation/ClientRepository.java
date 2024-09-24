@@ -74,7 +74,7 @@ public class ClientRepository implements ClientRepositoryInterface {
         List<Client> clients = new ArrayList<>();
         String sql = "SELECT c.id_client, c.nom, c.adresse, c.telephone, c.est_professionnel " +
                 "FROM client c " +
-                "JOIN projet p ON c.id_client = p.id_client " + // Adjust according to your foreign key relation
+                "JOIN projet p ON c.id_client = p.id_client " +
                 "WHERE p.id_projet = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {

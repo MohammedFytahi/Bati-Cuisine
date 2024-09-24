@@ -11,14 +11,5 @@ public interface DevisRepositoryInterface {
     void insererDevis(int idProjet, double montantEstime, LocalDate dateEmission, LocalDate dateValidite, boolean accepte);
 
 
-    Devis obtenirDevisParId(int idDevis);
 
-
-    void mettreAJourStatutDevis(int idDevis, boolean accepte);
-
-
-    void supprimerDevis(int idDevis);
-
-
-    List<Devis> obtenirTousLesDevis();
 }

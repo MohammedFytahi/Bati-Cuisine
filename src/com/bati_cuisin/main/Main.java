@@ -505,7 +505,7 @@ public class Main {
                 System.out.println("Devis enregistré avec succès !");
             } else {
                 projet.setEtatProjet(Project.EtatProjet.ANNULE);
-                projectService.updateProjectState(projet.getIdProjet(), Project.EtatProjet.ANNULE);  // Méthode pour mettre à jour l'état dans la base de données
+                projectService.updateProjectState(projet.getIdProjet(), Project.EtatProjet.ANNULE);
                 System.out.println("Enregistrement du devis annulé et projet marqué comme ANNULE.");
             }
 

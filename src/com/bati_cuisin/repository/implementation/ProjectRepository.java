@@ -33,15 +33,15 @@ public class ProjectRepository implements ProjectRepositoryInterface {
             stmt.setString(1, project.getNomProjet());
             stmt.setInt(2, project.getIdClient());
             stmt.setDouble(3, project.getMargeBeneficiaire());
-            stmt.setDouble(4, project.getCoutTotal()); // Assurez-vous que ce champ est initialisé
+            stmt.setDouble(4, project.getCoutTotal());
             stmt.setString(5, project.getEtatProjet().name());
             stmt.setObject(6, project.getDateCreation());
             stmt.executeUpdate();
 
-            // Récupérer l'ID généré
+
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    project.setIdProjet(generatedKeys.getInt(1)); // Mettre à jour l'ID du projet
+                    project.setIdProjet(generatedKeys.getInt(1));
                 } else {
                     throw new SQLException("Échec de l'obtention de l'ID du projet.");
                 }
@@ -55,7 +55,7 @@ public class ProjectRepository implements ProjectRepositoryInterface {
     @Override
     public List<Project> findAll() {
         List<Project> projets = new ArrayList<>();
-        String sql = "SELECT * FROM projet"; // Sélectionne tous les projets
+        String sql = "SELECT * FROM projet";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -71,37 +71,13 @@ public class ProjectRepository implements ProjectRepositoryInterface {
                 projet.setCoutTotal(rs.getDouble("cout_total"));
                 projet.setDateCreation(rs.getTimestamp("date_creation").toLocalDateTime());
 
-                projets.add(projet); // Ajoute le projet à la liste
+                projets.add(projet);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return projets; // Retourne la liste des projets
-    }
-
-    @Override
-    public Optional<Project> trouverProjetParId(int idProjet) {
-        String sql = "SELECT * FROM projet WHERE id_projet = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, idProjet);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                Project project = new Project(
-                        rs.getString("nom_projet"),
-                        rs.getInt("id_client"),
-                        rs.getDouble("marge_beneficiaire"),
-                        Project.EtatProjet.valueOf(rs.getString("etat_projet"))
-                );
-                project.setIdProjet(rs.getInt("id_projet"));
-                project.setCoutTotal(rs.getDouble("cout_total"));
-                project.setDateCreation(rs.getTimestamp("date_creation").toLocalDateTime());
-                return Optional.of(project);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return projets;
     }
 
 

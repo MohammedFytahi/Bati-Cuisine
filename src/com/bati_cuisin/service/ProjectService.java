@@ -23,11 +23,7 @@ public class ProjectService {
     private MaterielRepository materielRepository;
     private MainOeuvreRepository mainOeuvreRepository;
 
-//    public ProjectService(ProjectRepositoryInterface projectRepository, MaterielRepository materielRepository, MainOeuvreRepository mainOeuvreRepository) {
-//        this.projectRepository = projectRepository;
-//        this.materielRepository = materielRepository; // Initialize materielRepository
-//        this.mainOeuvreRepository = mainOeuvreRepository; // Initialize mainOeuvreRepository
-//    }
+
 public ProjectService(ProjectRepositoryInterface projectRepository,
                       ClientRepository clientRepository,
                       MaterielRepository materielRepository,
@@ -50,12 +46,6 @@ public ProjectService(ProjectRepositoryInterface projectRepository,
 
 
 
-    public Project consulterProjet(int idProjet) {
-        Optional<Project> optionalProject = projectRepository.trouverProjetParId(idProjet);
-
-
-        return optionalProject.orElseThrow(() -> new IllegalArgumentException("Projet avec l'ID " + idProjet + " n'existe pas."));
-    }
 
 
     public void mettreAJourCoutTotalProjet(int idProjet, double coutTotal) throws SQLException {
@@ -75,38 +65,41 @@ public ProjectService(ProjectRepositoryInterface projectRepository,
             System.out.println("État du Projet: " + projet.getEtatProjet());
             System.out.println("Date de Création: " + projet.getDateCreation());
 
-            // Retrieve and display materials associated with the project
-            List<Materiel> materials = materielRepository.findMaterialsByProjectId(projet.getIdProjet());
-            if (materials.isEmpty()) {
-                System.out.println("  Aucun matériel trouvé pour ce projet.");
-            } else {
-                System.out.println("  Matériaux :");
-                materials.forEach(materiel -> {
-                    System.out.println("    - " + materiel.getNom() + ": " + materiel.getQuantite() + " unités, Coût unitaire: " + materiel.getCoutUnitaire());
-                });
-            }
 
-            // Retrieve and display labor associated with the project
-            List<MainOeuvre> laborList = mainOeuvreRepository.findMainOeuvreByProjectId(projet.getIdProjet());
-            if (laborList.isEmpty()) {
-                System.out.println("  Aucune main d'œuvre trouvée pour ce projet.");
-            } else {
-                System.out.println("  Main d'œuvre :");
-                laborList.forEach(mainOeuvre -> {
-                    System.out.println("    - " + mainOeuvre.getNom() + ": " + mainOeuvre.getHeuresTravail() + " heures, Taux horaire: " + mainOeuvre.getTauxHoraire());
-                });
-            }
+            Optional<List<Materiel>> optionalMaterials = materielRepository.findMaterialsByProjectId(projet.getIdProjet());
+            optionalMaterials.ifPresentOrElse(
+                    materials -> {
+                        System.out.println("  Matériaux :");
+                        materials.forEach(materiel ->
+                                System.out.println("    - " + materiel.getNom() + ": " + materiel.getQuantite() + " unités, Coût unitaire: " + materiel.getCoutUnitaire()));
+                    },
+                    () -> System.out.println("  Aucun matériel trouvé pour ce projet.")
+            );
 
-            // Retrieve and display clients associated with the project
+
+            Optional<List<MainOeuvre>> optionalLaborList = mainOeuvreRepository.findMainOeuvreByProjectId(projet.getIdProjet());
+            optionalLaborList.ifPresentOrElse(
+                    laborList -> {
+                        if (laborList.isEmpty()) {
+                            System.out.println("  Aucune main d'œuvre trouvée pour ce projet.");
+                        } else {
+                            System.out.println("  Main d'œuvre :");
+                            laborList.forEach(mainOeuvre ->
+                                    System.out.println("    - " + mainOeuvre.getNom() + ": " + mainOeuvre.getHeuresTravail() + " heures, Taux horaire: " + mainOeuvre.getTauxHoraire()));
+                        }
+                    },
+                    () -> System.out.println("  Aucune main d'œuvre trouvée pour ce projet.")
+            );
+
+
             List<Client> clients = clientRepository.findClientsByProjectId(projet.getIdProjet());
             if (clients.isEmpty()) {
                 System.out.println("  Aucun client trouvé pour ce projet.");
             } else {
                 System.out.println("  Clients :");
-                clients.forEach(client -> {
-                    System.out.println("    - " + client.getNom() + ", Adresse: " + client.getAdresse() + ", Téléphone: " + client.getTelephone() +
-                            ", Professionnel: " + (client.isEst_professionnel() ? "Oui" : "Non"));
-                });
+                clients.stream().forEach(client ->
+                        System.out.println("    - " + client.getNom() + ", Adresse: " + client.getAdresse() + ", Téléphone: " + client.getTelephone() +
+                                ", Professionnel: " + (client.isEst_professionnel() ? "Oui" : "Non")));
             }
 
             System.out.println("--------------------------");

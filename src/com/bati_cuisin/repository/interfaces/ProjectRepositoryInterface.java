@@ -13,7 +13,7 @@ public interface ProjectRepositoryInterface {
 
 
 
-        Optional<Project> trouverProjetParId(int idProjet);
+
 
     void updateCoutTotal(int idProjet, double coutTotal) throws SQLException;
 

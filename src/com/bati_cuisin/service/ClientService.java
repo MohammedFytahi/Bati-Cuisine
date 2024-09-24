@@ -38,7 +38,5 @@ public class ClientService {
     }
 
 
-    public void clearCache() {
-        clientCache.clear();
-    }
+
 }

@@ -20,24 +20,7 @@ public class DevisService {
     }
 
 
-    public Devis obtenirDevisParId(int idDevis) {
-        return devisRepository.obtenirDevisParId(idDevis);
-    }
 
-
-    public void accepterDevis(int idDevis, boolean accepte) {
-        devisRepository.mettreAJourStatutDevis(idDevis, accepte);
-    }
-
-
-    public void supprimerDevis(int idDevis) {
-        devisRepository.supprimerDevis(idDevis);
-    }
-
-
-    public List<Devis> obtenirTousLesDevis() {
-        return devisRepository.obtenirTousLesDevis();
-    }
 
 
 }

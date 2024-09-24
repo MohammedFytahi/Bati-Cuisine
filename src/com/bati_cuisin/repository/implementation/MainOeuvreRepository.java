@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class MainOeuvreRepository implements MainOeuvreRepositoryInterface {
     private Connection connection;
@@ -41,7 +42,8 @@ public class MainOeuvreRepository implements MainOeuvreRepositoryInterface {
         }
     }
 
-    public List<MainOeuvre> findMainOeuvreByProjectId(int idProjet) {
+    @Override
+    public Optional<List<MainOeuvre>> findMainOeuvreByProjectId(int idProjet) {
         List<MainOeuvre> mainOeuvres = new ArrayList<>();
         String sql = "SELECT * FROM main_oeuvre WHERE id_projet = ?";
 
@@ -64,7 +66,7 @@ public class MainOeuvreRepository implements MainOeuvreRepositoryInterface {
             e.printStackTrace();
         }
 
-        return mainOeuvres;
+        return mainOeuvres.isEmpty() ? Optional.empty() : Optional.of(mainOeuvres);
     }
 
 
