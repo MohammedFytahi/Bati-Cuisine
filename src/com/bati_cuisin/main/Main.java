@@ -25,7 +25,10 @@ public class Main {
         DevisRepository devisRepository = new DevisRepository();
         InputValidator validator = new InputValidator();
 
-        ProjectService projectService = new ProjectService(projectRepository);
+        ProjectService projectService = new ProjectService(projectRepository,
+                clientRepository,
+                materielRepository,
+                mainOeuvreRepository);
         ClientService clientService = new ClientService(clientRepository);
         MaterielService materielService = new MaterielService(materielRepository);
         MainOeuvreService mainOeuvreService = new MainOeuvreService(mainOeuvreRepository);

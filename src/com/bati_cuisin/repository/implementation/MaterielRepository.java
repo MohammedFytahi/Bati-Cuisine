@@ -39,8 +39,8 @@ public class MaterielRepository implements MaterielRepositoryInterface {
             e.printStackTrace();
         }
     }
-
-    private List<Materiel> findMaterialsByProjectId(int idProjet) {
+    @Override
+    public List<Materiel> findMaterialsByProjectId(int idProjet) {
         List<Materiel> materiaux = new ArrayList<>();
         String sql = "SELECT * FROM materiel WHERE id_projet = ?";
 
@@ -55,7 +55,7 @@ public class MaterielRepository implements MaterielRepositoryInterface {
                         rs.getDouble("cout_unitaire"),
                         rs.getDouble("quantite"),
                         rs.getDouble("cout_transport"),
-                        rs.getDouble("coefficient_qualite"),
+                        rs.getDouble("coeff_qualite"),
                         rs.getInt("id_projet")
                 );
                 materiaux.add(materiel);
@@ -66,6 +66,7 @@ public class MaterielRepository implements MaterielRepositoryInterface {
 
         return materiaux;
     }
+
 
 
 

@@ -8,6 +8,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ClientRepository implements ClientRepositoryInterface {
     private Connection connection;
@@ -67,6 +69,34 @@ public class ClientRepository implements ClientRepositoryInterface {
         return null;
     }
 
+    @Override
+    public List<Client> findClientsByProjectId(int projectId) {
+        List<Client> clients = new ArrayList<>();
+        String sql = "SELECT c.id_client, c.nom, c.adresse, c.telephone, c.est_professionnel " +
+                "FROM client c " +
+                "JOIN projet p ON c.id_client = p.id_client " + // Adjust according to your foreign key relation
+                "WHERE p.id_projet = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, projectId);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id_client");
+                String nom = resultSet.getString("nom");
+                String adresse = resultSet.getString("adresse");
+                String telephone = resultSet.getString("telephone");
+                boolean estProfessionnel = resultSet.getBoolean("est_professionnel");
+
+                Client client = new Client(id, nom, adresse, telephone, estProfessionnel);
+                clients.add(client);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return clients;
+    }
 
 
 }

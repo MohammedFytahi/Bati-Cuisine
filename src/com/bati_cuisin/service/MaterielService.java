@@ -3,6 +3,9 @@ package com.bati_cuisin.service;
 import com.bati_cuisin.model.Materiel;
 import com.bati_cuisin.repository.interfaces.MaterielRepositoryInterface;
 
+import java.sql.SQLException;
+import java.util.List;
+
 public class MaterielService {
     private MaterielRepositoryInterface materielRepository;
 
@@ -14,6 +17,7 @@ public class MaterielService {
         Materiel materiel = new Materiel(nom, tauxTVA, coutUnitaire, quantite, coutTransport, coefficientQualite,id_projet);
         materielRepository.ajouterMateriel(materiel);
     }
+
 
 
 }

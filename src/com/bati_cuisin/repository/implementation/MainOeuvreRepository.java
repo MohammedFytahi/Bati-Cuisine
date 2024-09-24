@@ -41,7 +41,7 @@ public class MainOeuvreRepository implements MainOeuvreRepositoryInterface {
         }
     }
 
-    private List<MainOeuvre> findMainOeuvreByProjectId(int idProjet) {
+    public List<MainOeuvre> findMainOeuvreByProjectId(int idProjet) {
         List<MainOeuvre> mainOeuvres = new ArrayList<>();
         String sql = "SELECT * FROM main_oeuvre WHERE id_projet = ?";
 
